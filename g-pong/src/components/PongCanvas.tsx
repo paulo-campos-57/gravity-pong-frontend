@@ -67,10 +67,12 @@ export function PongCanvas({ gameId, gameState, onMovePaddle }: PongCanvasProps)
 
     const p1 = gameState.paddle1;
     const p2 = gameState.paddle2;
-    ctx.fillStyle = '#38bdf8';
+    
+    ctx.fillStyle = '#38bdf8'; // Azul (Player 1)
     ctx.fillRect(p1.x, p1.y, p1.width, p1.height);
     
-    ctx.fillStyle = '#f43f5e';
+    // COR DIRECIONADA PELO ESTÁGIO DA TORRE:
+    ctx.fillStyle = gameState.enemyColor || '#f43f5e'; 
     ctx.fillRect(p2.x, p2.y, p2.width, p2.height);
 
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';

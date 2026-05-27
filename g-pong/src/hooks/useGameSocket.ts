@@ -33,8 +33,8 @@ export function useGameSocket() {
   }, []);
 
   // Ações que o frontend pode despachar para o backend
-  const createSinglePlayer = useCallback((playerName: string) => {
-    socket.emit('create_single_player', { playerName, maxScore: 5 });
+  const createSinglePlayer = useCallback((playerName: string, stage: number) => {
+    socket.emit('create_single_player', { playerName, maxScore: 5, stage });
   }, []);
 
   const createMultiplayer = useCallback((playerName: string) => {
