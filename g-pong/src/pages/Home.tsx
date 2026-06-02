@@ -1,9 +1,13 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCampaign } from '../hooks/useCampaign';
 
 export function Home() {
   const navigate = useNavigate();
   const { campaign, isLoaded, updateProfile, resetCampaign, hardReset } = useCampaign();
+  
+  // NOVO: Estado para controlar se a história está aberta ou fechada
+  const [showLore, setShowLore] = useState(false);
 
   if (!isLoaded) return null;
 
@@ -18,17 +22,80 @@ export function Home() {
 
   return (
     <div className="min-h-screen bg-black text-green-500 font-arcade flex flex-col items-center p-8 crt relative overflow-hidden">
-      <div className="text-center mb-10 mt-6 z-10">
+      
+      {/* ================= POPUP DE HISTÓRIA (STAR WARS) ================= */}
+      {showLore && (
+        <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4">
+          <button 
+            onClick={() => setShowLore(false)} 
+            className="absolute top-8 right-8 text-xs text-yellow-500 border border-yellow-500 hover:bg-yellow-500 hover:text-black px-4 py-2 z-[60] transition-colors"
+          >
+            [ PULAR ABERTURA ]
+          </button>
+          
+          <div className="star-wars-container max-w-2xl z-50">
+            <div className="star-wars-text text-xs md:text-lg lg:text-xl font-bold">
+              <p className="mb-8 text-sky-400 text-lg">EPISÓDIO I: A AMEAÇA GRAVITACIONAL</p>
+              
+              <p className="mb-8">
+                No milênio 3024, a galáxia enfrenta seu maior colapso...
+              </p>
+              
+              <p className="mb-8">
+                A anomalia conhecida como 'O Buraco Negro Central' distorceu 
+                as leis da física em todos os sistemas.
+              </p>
+              
+              <p className="mb-8">
+                Raças alienígenas invasoras aproveitaram o caos espacial 
+                para expandir seus impérios, utilizando o próprio 
+                tecido da gravidade como uma arma letal.
+              </p>
+              
+              <p className="mb-8">
+                Seu planeta natal está na rota de colisão da Frota Inimiga. 
+                Os escudos planetários possuem apenas 60 de HP antes da 
+                aniquilação total.
+              </p>
+              
+              <p className="mb-8">
+                Você foi convocado para pilotar os Módulos Defletores. 
+                Sua missão é rebater os projéteis de dobra espacial e 
+                proteger o núcleo orbital de invasões sucessivas.
+              </p>
+              
+              <p className="mb-8">
+                Suba a Torre Gravitacional. Derrote os Comandantes.
+              </p>
+              
+              <p className="mb-8 text-red-500 animate-pulse">
+                A força da gravidade será sua maior aliada... <br/><br/>
+                Ou a sua destruição.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* =============================================================== */}
+
+      <div className="text-center mb-6 mt-6 z-10">
         <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b from-purple-400 to-sky-600 drop-shadow-[0_0_15px_rgba(168,85,247,0.8)] mb-4">
           GRAVITY DEFENDER
         </h1>
-        <p className="text-white text-xs md:text-sm animate-pulse">INSERT COIN TO PROTECT YOUR PLANET</p>
+        <p className="text-white text-xs md:text-sm animate-pulse mb-6">INSERT COIN TO PROTECT YOUR PLANET</p>
+        
+        {/* BOTÃO PARA ABRIR A LORE */}
+        <button 
+          onClick={() => setShowLore(true)}
+          className="text-[10px] text-yellow-400 hover:text-white hover:underline transition-colors"
+        >
+          [ LER ARQUIVOS DA GUERRA ]
+        </button>
       </div>
 
       {/* Painel do Alienígena */}
       <div className="bg-gray-900 border-4 border-purple-800 p-6 w-full max-w-2xl mb-8 z-10 shadow-[0_0_20px_rgba(168,85,247,0.4)] relative">
-
-        <button
+        <button 
           onClick={hardReset}
           className="absolute top-2 right-2 text-[8px] text-red-500 hover:text-white border border-red-900 hover:bg-red-600 px-2 py-1 transition-colors"
           title="Apagar dados e criar nova identidade"
@@ -67,7 +134,7 @@ export function Home() {
           <span>RECURSOS GASTOS: {campaign.retriesUsed}/3</span>
         </div>
         <div className="w-full h-6 bg-gray-800 border-2 border-gray-600 p-1">
-          <div
+          <div 
             className={`h-full ${campaign.hp > 20 ? 'bg-green-500' : 'bg-red-600 animate-pulse'}`}
             style={{ width: `${hpPercentage}%`, transition: 'width 0.5s ease-in-out' }}
           ></div>
@@ -89,7 +156,7 @@ export function Home() {
           {/* TORRE SINGLE PLAYER */}
           <div className="bg-gray-900 border-4 border-slate-700 p-6 flex flex-col gap-4">
             <h2 className="text-sm text-yellow-400 text-center mb-4">MÓDULO DE DEFESA</h2>
-
+            
             {[
               { id: 1, name: "VANGUARDA VERDE", color: "text-green-500" },
               { id: 2, name: "CRUZADOR SOLAR", color: "text-yellow-500" },
@@ -102,10 +169,11 @@ export function Home() {
                   key={stage.id}
                   onClick={() => handleStart(stage.id)}
                   disabled={isLocked}
-                  className={`p-4 border-2 flex justify-between text-xs items-center transition-all ${isLocked
-                      ? 'bg-black border-gray-800 text-gray-700 cursor-not-allowed'
+                  className={`p-4 border-2 flex justify-between text-xs items-center transition-all ${
+                    isLocked 
+                      ? 'bg-black border-gray-800 text-gray-700 cursor-not-allowed' 
                       : `bg-black border-gray-500 hover:bg-gray-800 hover:border-white ${stage.color}`
-                    }`}
+                  }`}
                 >
                   <span>STAGE 0{stage.id}</span>
                   <span>{isLocked ? 'LOCKED' : stage.name}</span>
@@ -117,7 +185,7 @@ export function Home() {
           <div className="bg-gray-900 border-4 border-slate-700 p-6 flex flex-col justify-center items-center text-center">
             <h2 className="text-sm text-sky-400 mb-6">MÓDULO MULTIPLAYER</h2>
             <p className="text-[10px] text-gray-400 mb-8 leading-relaxed">
-              ENFRENTE OUTROS ALIENÍGENAS<br /><br />
+              ENFRENTE OUTROS ALIENÍGENAS<br/><br/>
               A GRAVIDADE NÃO FAZ DISTINÇÃO DE RAÇAS.
             </p>
             <Link to="/multiplayer" className="w-full py-4 bg-sky-900 text-white hover:bg-sky-700 border-2 border-sky-400 text-xs text-center block">

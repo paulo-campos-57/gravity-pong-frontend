@@ -17,3 +17,41 @@
   background-size: 100% 2px, 3px 100%;
   pointer-events: none;
 }
+
+/* ... seu código anterior (tailwind e crt) ... */
+
+/* Efeito Star Wars Crawl Ajustado */
+.star-wars-container {
+  perspective: 800px; /* Aumentado para diminuir a distorção do fundo (traz pra perto) */
+  display: flex;
+  justify-content: center;
+  position: relative;
+  height: 65vh;
+  width: 100%;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+}
+
+.star-wars-text {
+  position: absolute;
+  top: 100%;
+  transform-origin: 50% 100%;
+  animation: starWarsCrawl 75s linear forwards; /* Aumentado de 45s para 75s (Mais Lento) */
+  color: #facc15; 
+  text-align: center;
+  line-height: 2.5;
+  width: 100%;
+}
+
+@keyframes starWarsCrawl {
+  0% {
+    top: 100%;
+    /* Aumentamos de 15deg para 40deg para "deitar" bem o texto para trás */
+    transform: rotateX(40deg) translateY(0); 
+  }
+  100% {
+    top: -100%;
+    transform: rotateX(40deg) translateY(-2500px); 
+  }
+}
