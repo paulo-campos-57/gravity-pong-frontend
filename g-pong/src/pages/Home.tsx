@@ -27,8 +27,8 @@ export function Home() {
 
       {/* Painel do Alienígena */}
       <div className="bg-gray-900 border-4 border-purple-800 p-6 w-full max-w-2xl mb-8 z-10 shadow-[0_0_20px_rgba(168,85,247,0.4)] relative">
-        
-        <button 
+
+        <button
           onClick={hardReset}
           className="absolute top-2 right-2 text-[8px] text-red-500 hover:text-white border border-red-900 hover:bg-red-600 px-2 py-1 transition-colors"
           title="Apagar dados e criar nova identidade"
@@ -67,7 +67,7 @@ export function Home() {
           <span>RECURSOS GASTOS: {campaign.retriesUsed}/3</span>
         </div>
         <div className="w-full h-6 bg-gray-800 border-2 border-gray-600 p-1">
-          <div 
+          <div
             className={`h-full ${campaign.hp > 20 ? 'bg-green-500' : 'bg-red-600 animate-pulse'}`}
             style={{ width: `${hpPercentage}%`, transition: 'width 0.5s ease-in-out' }}
           ></div>
@@ -89,7 +89,7 @@ export function Home() {
           {/* TORRE SINGLE PLAYER */}
           <div className="bg-gray-900 border-4 border-slate-700 p-6 flex flex-col gap-4">
             <h2 className="text-sm text-yellow-400 text-center mb-4">MÓDULO DE DEFESA</h2>
-            
+
             {[
               { id: 1, name: "VANGUARDA VERDE", color: "text-green-500" },
               { id: 2, name: "CRUZADOR SOLAR", color: "text-yellow-500" },
@@ -102,11 +102,10 @@ export function Home() {
                   key={stage.id}
                   onClick={() => handleStart(stage.id)}
                   disabled={isLocked}
-                  className={`p-4 border-2 flex justify-between text-xs items-center transition-all ${
-                    isLocked 
-                      ? 'bg-black border-gray-800 text-gray-700 cursor-not-allowed' 
+                  className={`p-4 border-2 flex justify-between text-xs items-center transition-all ${isLocked
+                      ? 'bg-black border-gray-800 text-gray-700 cursor-not-allowed'
                       : `bg-black border-gray-500 hover:bg-gray-800 hover:border-white ${stage.color}`
-                  }`}
+                    }`}
                 >
                   <span>STAGE 0{stage.id}</span>
                   <span>{isLocked ? 'LOCKED' : stage.name}</span>
@@ -118,7 +117,7 @@ export function Home() {
           <div className="bg-gray-900 border-4 border-slate-700 p-6 flex flex-col justify-center items-center text-center">
             <h2 className="text-sm text-sky-400 mb-6">MÓDULO MULTIPLAYER</h2>
             <p className="text-[10px] text-gray-400 mb-8 leading-relaxed">
-              ENFRENTE OUTROS ALIENÍGENAS<br/><br/>
+              ENFRENTE OUTROS ALIENÍGENAS<br /><br />
               A GRAVIDADE NÃO FAZ DISTINÇÃO DE RAÇAS.
             </p>
             <Link to="/multiplayer" className="w-full py-4 bg-sky-900 text-white hover:bg-sky-700 border-2 border-sky-400 text-xs text-center block">

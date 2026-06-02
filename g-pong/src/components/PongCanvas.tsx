@@ -22,7 +22,7 @@ export function PongCanvas({ gameId, gameState, onMovePaddle }: PongCanvasProps)
     };
     const handleKeyUp = (e: KeyboardEvent) => {
       if ((e.key === 'ArrowUp' && currentDirection === 'up') ||
-          (e.key === 'ArrowDown' && currentDirection === 'down')) {
+        (e.key === 'ArrowDown' && currentDirection === 'down')) {
         currentDirection = 'stop';
         onMovePaddle(gameId, 'stop');
       }
@@ -64,7 +64,7 @@ export function PongCanvas({ gameId, gameState, onMovePaddle }: PongCanvasProps)
     const p2 = gameState.paddle2;
     ctx.fillStyle = '#38bdf8';
     ctx.fillRect(p1.x, p1.y, p1.width, p1.height);
-    
+
     ctx.fillStyle = gameState.enemyColor || '#f43f5e';
     ctx.fillRect(p2.x, p2.y, p2.width, p2.height);
 
@@ -82,8 +82,8 @@ export function PongCanvas({ gameId, gameState, onMovePaddle }: PongCanvasProps)
   return (
     <div className="flex flex-col items-center gap-6 font-arcade">
       <div className="flex w-full justify-between max-w-[800px] text-xs md:text-sm text-white px-2">
-        <span className="text-sky-400">{gameState.players.player1} <br/><br/><span className="text-2xl">{gameState.scores.player1}</span></span>
-        <span className="text-right" style={{ color: gameState.enemyColor || '#f43f5e' }}>{gameState.players.player2} <br/><br/><span className="text-2xl">{gameState.scores.player2}</span></span>
+        <span className="text-sky-400">{gameState.players.player1} <br /><br /><span className="text-2xl">{gameState.scores.player1}</span></span>
+        <span className="text-right" style={{ color: gameState.enemyColor || '#f43f5e' }}>{gameState.players.player2} <br /><br /><span className="text-2xl">{gameState.scores.player2}</span></span>
       </div>
       <canvas
         ref={canvasRef}

@@ -5,7 +5,9 @@ export function useGameSocket() {
   const [gameState, setGameState] = useState<any>(null);
   const [gameId, setGameId] = useState<string>('');
   const [statusMsg, setStatusMsg] = useState<string>('');
-  const [gameOver, setGameOver] = useState<{ winner: string } | null>(null);
+  const [gameOver, setGameOver] = useState<{
+    scores: any; winner: string
+  } | null>(null);
 
   useEffect(() => {
     if (!socket.connected) {
