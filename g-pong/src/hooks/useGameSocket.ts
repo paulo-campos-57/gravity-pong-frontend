@@ -8,12 +8,10 @@ export function useGameSocket() {
   const [gameOver, setGameOver] = useState<{ winner: string } | null>(null);
 
   useEffect(() => {
-    // Garante que o socket esteja conectado
     if (!socket.connected) {
       socket.connect();
     }
 
-    // Configura os ouvintes de eventos
     socket.on('game_created', (data) => setGameId(data.gameId));
     socket.on('game_joined', (data) => setGameId(data.gameId));
     socket.on('game_state', (state) => setGameState(state));
@@ -21,7 +19,6 @@ export function useGameSocket() {
     socket.on('game_log', (msg) => setStatusMsg(msg));
     socket.on('game_error', (err) => setStatusMsg(`Erro: ${err}`));
 
-    // Limpeza ao desmontar o componente que usar o hook
     return () => {
       socket.off('game_created');
       socket.off('game_joined');
@@ -32,16 +29,21 @@ export function useGameSocket() {
     };
   }, []);
 
-  // Ações que o frontend pode despachar para o backend
   const createSinglePlayer = useCallback((playerName: string, stage: number) => {
+    setGameOver(null);
+    setGameState(null);
     socket.emit('create_single_player', { playerName, maxScore: 5, stage });
   }, []);
 
   const createMultiplayer = useCallback((playerName: string) => {
+    setGameOver(null);
+    setGameState(null);
     socket.emit('create_game', { playerName, maxScore: 5 });
   }, []);
 
   const joinMultiplayer = useCallback((playerName: string, id: string) => {
+    setGameOver(null);
+    setGameState(null);
     socket.emit('join_game', { playerName, gameId: id.toUpperCase() });
   }, []);
 
@@ -49,10 +51,11 @@ export function useGameSocket() {
     socket.emit('move_paddle', { gameId: id, direction });
   }, []);
 
-  // Força a desconexão para encerrar a partida no backend se o usuário sair da tela
   const leaveGame = useCallback(() => {
+    setGameOver(null);
+    setGameState(null);
     socket.disconnect();
-    setTimeout(() => socket.connect(), 500); // Reconecta para ficar pronto para a próxima
+    setTimeout(() => socket.connect(), 500);
   }, []);
 
   return {
