@@ -32,7 +32,7 @@ export function SinglePlayer() {
   }, [showLore, gameOver]);
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' || e.key.toLowerCase() === 'p') {
         handleTogglePause();
       }
