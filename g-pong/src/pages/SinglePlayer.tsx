@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { PongCanvas } from '../components/PongCanvas';
 import { useGameSocket } from '../hooks/useGameSocket';
@@ -14,11 +14,33 @@ export function SinglePlayer() {
   const { gameState, gameId, gameOver, createSinglePlayer, movePaddle, leaveGame } = useGameSocket();
 
   const [showLore, setShowLore] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
 
   const queryParams = new URLSearchParams(location.search);
   const stage = parseInt(queryParams.get('stage') || '1', 10);
 
   const alienProfile = campaign.playerName ? `${campaign.playerName} (${campaign.planetName})` : 'Alien (Desconhecido)';
+
+  const handleTogglePause = useCallback(() => {
+    if (showLore || gameOver) return;
+
+    setIsPaused((prev) => {
+      const nextPauseState = !prev;
+
+      return nextPauseState;
+    });
+  }, [showLore, gameOver]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' || e.key.toLowerCase() === 'p') {
+        handleTogglePause();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleTogglePause]);
 
   const getStageLore = () => {
     switch (stage) {
@@ -76,11 +98,12 @@ export function SinglePlayer() {
     }
 
     if (showLore) return;
+    if (isPaused) return;
 
     createSinglePlayer(alienProfile, stage);
 
     return () => leaveGame();
-  }, [createSinglePlayer, leaveGame, alienProfile, stage, isLoaded, campaign.unlockedStage, navigate, showLore]);
+  }, [createSinglePlayer, leaveGame, alienProfile, stage, isLoaded, campaign.unlockedStage, navigate, showLore, isPaused]);
 
   const handleRetreat = () => {
     takeCriticalDamage();
@@ -91,6 +114,7 @@ export function SinglePlayer() {
   const handleRetry = () => {
     const cost = RETRY_COSTS[campaign.retriesUsed];
     useRetry(cost);
+    setIsPaused(false);
     setShowLore(true);
   };
 
@@ -128,26 +152,22 @@ export function SinglePlayer() {
   }
 
   if (gameOver) {
-    const isWin = gameOver.scores.player1 > gameOver.scores.player2;
-    const currentRetryCost = RETRY_COSTS[campaign.retriesUsed];
-    const canRetry = campaign.retriesUsed < 3 && campaign.hp > currentRetryCost;
-
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4 font-arcade crt">
-        <div className={`p-10 border-4 max-w-2xl text-center ${isWin ? 'border-green-500 bg-green-900/20' : 'border-red-600 bg-red-900/20'}`}>
-          <h2 className={`text-4xl mb-8 ${isWin ? 'text-green-400' : 'text-red-500'}`}>
-            {isWin ? 'INVASÃO REPELIDA!' : 'SISTEMAS COMPROMETIDOS!'}
+        <div className={`p-10 border-4 max-w-2xl text-center ${gameOver.scores.player1 > gameOver.scores.player2 ? 'border-green-500 bg-green-900/20' : 'border-red-600 bg-red-900/20'}`}>
+          <h2 className={`text-4xl mb-8 ${gameOver.scores.player1 > gameOver.scores.player2 ? 'text-green-400' : 'text-red-500'}`}>
+            {gameOver.scores.player1 > gameOver.scores.player2 ? 'INVASÃO REPELIDA!' : 'SISTEMAS COMPROMETIDOS!'}
           </h2>
 
           <p className="text-white text-xs leading-loose mb-10">
-            {isWin
+            {gameOver.scores.player1 > gameOver.scores.player2
               ? `A defesa do planeta ${campaign.planetName} foi bem sucedida. O setor está seguro.`
               : `Sua defesa falhou. A frota inimiga está prestes a bombardear ${campaign.planetName}.`
             }
           </p>
 
           <div className="flex flex-col gap-4">
-            {isWin ? (
+            {gameOver.scores.player1 > gameOver.scores.player2 ? (
               <button onClick={handleNext} className="bg-black border-2 border-green-500 text-green-500 py-4 hover:bg-green-500 hover:text-black">
                 CONTINUAR CAMPANHA
               </button>
@@ -157,9 +177,9 @@ export function SinglePlayer() {
                   ACEITAR DERROTA (-15 HP)
                 </button>
 
-                {canRetry ? (
+                {campaign.retriesUsed < 3 && campaign.hp > RETRY_COSTS[campaign.retriesUsed] ? (
                   <button onClick={handleRetry} className="bg-black border-2 border-yellow-500 text-yellow-500 py-4 hover:bg-yellow-500 hover:text-black text-[10px]">
-                    DISTORÇÃO TEMPORAL: TENTAR NOVAMENTE (-{currentRetryCost} HP)
+                    DISTORÇÃO TEMPORAL: TENTAR NOVAMENTE (-{RETRY_COSTS[campaign.retriesUsed]} HP)
                   </button>
                 ) : (
                   <p className="text-red-700 text-xs mt-4">SEM RECURSOS TEMPORAIS SUFICIENTES.</p>
@@ -173,12 +193,47 @@ export function SinglePlayer() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4 font-arcade crt">
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4 font-arcade crt relative">
+      {isPaused && (
+        <div className="absolute inset-0 bg-black/80 z-40 flex flex-col items-center justify-center backdrop-blur-sm animate-fade-in">
+          <div className="border-4 border-yellow-500 p-8 bg-black text-center max-w-sm">
+            <h3 className="text-yellow-500 text-3xl mb-6 animate-pulse">SISTEMA PAUSADO</h3>
+            <p className="text-gray-400 text-[10px] mb-8 leading-relaxed">
+              O tempo espacial foi temporariamente congelado.
+            </p>
+            <div className="flex flex-col gap-4">
+              <button
+                onClick={handleTogglePause}
+                className="border-2 border-green-500 text-green-500 py-2 text-xs hover:bg-green-500 hover:text-black transition-colors"
+              >
+                RETORNAR À BATALHA
+              </button>
+              <button
+                onClick={handleRetreat}
+                className="border-2 border-red-500 text-red-500 py-2 text-xs hover:bg-red-500 hover:text-black transition-colors"
+              >
+                ABORTAR MISSÃO
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="w-full max-w-[800px] flex justify-between text-gray-500 text-[10px] mb-4">
         <span>ESTÁGIO 0{stage}</span>
+        <button onClick={handleTogglePause} className="hover:text-yellow-500 transition-colors uppercase">
+          [ {isPaused ? 'Retomar' : 'Pausar (ESC)'} ]
+        </button>
         <span>HP: <span className={campaign.hp <= 20 ? 'text-red-500 animate-pulse' : 'text-green-500'}>{campaign.hp}</span></span>
       </div>
-      <PongCanvas gameId={gameId} gameState={gameState} onMovePaddle={movePaddle} stage={stage} />
+
+      <PongCanvas
+        gameId={gameId}
+        gameState={gameState}
+        onMovePaddle={isPaused ? () => { } : movePaddle}
+        stage={stage}
+      />
+
       <button onClick={handleRetreat} className="mt-8 text-xs text-gray-600 hover:text-white uppercase border border-gray-800 px-4 py-2 hover:bg-gray-800 transition-colors">
         [ ABORTAR MISSÃO E ACEITAR DANO ]
       </button>
