@@ -11,7 +11,8 @@ export function SinglePlayer() {
   const location = useLocation();
 
   const { campaign, isLoaded, takeCriticalDamage, useRetry, unlockNextStage } = useCampaign();
-  const { gameState, gameId, gameOver, createSinglePlayer, movePaddle, leaveGame } = useGameSocket();
+
+  const { gameState, gameId, gameOver, createSinglePlayer, movePaddle, leaveGame, togglePause } = useGameSocket();
 
   const [showLore, setShowLore] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
@@ -24,12 +25,12 @@ export function SinglePlayer() {
   const handleTogglePause = useCallback(() => {
     if (showLore || gameOver) return;
 
-    setIsPaused((prev) => {
-      const nextPauseState = !prev;
+    setIsPaused((prev) => !prev);
 
-      return nextPauseState;
-    });
-  }, [showLore, gameOver]);
+    if (togglePause && gameId) {
+      togglePause(gameId);
+    }
+  }, [showLore, gameOver, togglePause, gameId]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -98,12 +99,11 @@ export function SinglePlayer() {
     }
 
     if (showLore) return;
-    if (isPaused) return;
 
     createSinglePlayer(alienProfile, stage);
 
     return () => leaveGame();
-  }, [createSinglePlayer, leaveGame, alienProfile, stage, isLoaded, campaign.unlockedStage, navigate, showLore, isPaused]);
+  }, [createSinglePlayer, leaveGame, alienProfile, stage, isLoaded, campaign.unlockedStage, navigate, showLore]);
 
   const handleRetreat = () => {
     takeCriticalDamage();

@@ -60,6 +60,10 @@ export function useGameSocket() {
     setTimeout(() => socket.connect(), 500);
   }, []);
 
+  const togglePause = useCallback((id: string) => {
+    socket.emit('toggle_pause', { gameId: id });
+  }, []);
+
   return {
     gameState,
     gameId,
@@ -70,5 +74,6 @@ export function useGameSocket() {
     joinMultiplayer,
     movePaddle,
     leaveGame,
+    togglePause,
   };
 }
