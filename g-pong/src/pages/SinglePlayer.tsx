@@ -9,7 +9,7 @@ const RETRY_COSTS = [3, 5, 8];
 export function SinglePlayer() {
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const { campaign, isLoaded, takeCriticalDamage, useRetry, unlockNextStage } = useCampaign();
   const { gameState, gameId, gameOver, createSinglePlayer, movePaddle, leaveGame } = useGameSocket();
 
@@ -17,11 +17,11 @@ export function SinglePlayer() {
 
   const queryParams = new URLSearchParams(location.search);
   const stage = parseInt(queryParams.get('stage') || '1', 10);
-  
+
   const alienProfile = campaign.playerName ? `${campaign.playerName} (${campaign.planetName})` : 'Alien (Desconhecido)';
 
   const getStageLore = () => {
-    switch(stage) {
+    switch (stage) {
       case 1:
         return (
           <>
@@ -74,11 +74,11 @@ export function SinglePlayer() {
       navigate('/');
       return;
     }
-    
+
     if (showLore) return;
 
     createSinglePlayer(alienProfile, stage);
-    
+
     return () => leaveGame();
   }, [createSinglePlayer, leaveGame, alienProfile, stage, isLoaded, campaign.unlockedStage, navigate, showLore]);
 
@@ -91,7 +91,7 @@ export function SinglePlayer() {
   const handleRetry = () => {
     const cost = RETRY_COSTS[campaign.retriesUsed];
     useRetry(cost);
-    setShowLore(true); 
+    setShowLore(true);
   };
 
   const handleNext = () => {
@@ -111,13 +111,13 @@ export function SinglePlayer() {
   if (showLore) {
     return (
       <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4 font-arcade crt">
-        <button 
-          onClick={() => setShowLore(false)} 
+        <button
+          onClick={() => setShowLore(false)}
           className="absolute top-8 right-8 text-xs text-yellow-500 border border-yellow-500 hover:bg-yellow-500 hover:text-black px-4 py-2 z-[60] transition-colors"
         >
           [ INICIAR DEFESA ]
         </button>
-        
+
         <div className="star-wars-container max-w-2xl z-50">
           <div className="star-wars-text text-xs md:text-lg lg:text-xl font-bold">
             {getStageLore()}
@@ -138,9 +138,9 @@ export function SinglePlayer() {
           <h2 className={`text-4xl mb-8 ${isWin ? 'text-green-400' : 'text-red-500'}`}>
             {isWin ? 'INVASÃO REPELIDA!' : 'SISTEMAS COMPROMETIDOS!'}
           </h2>
-          
+
           <p className="text-white text-xs leading-loose mb-10">
-            {isWin 
+            {isWin
               ? `A defesa do planeta ${campaign.planetName} foi bem sucedida. O setor está seguro.`
               : `Sua defesa falhou. A frota inimiga está prestes a bombardear ${campaign.planetName}.`
             }
@@ -156,7 +156,7 @@ export function SinglePlayer() {
                 <button onClick={handleRetreat} className="bg-black border-2 border-red-500 text-red-500 py-4 hover:bg-red-500 hover:text-black text-xs">
                   ACEITAR DERROTA (-15 HP)
                 </button>
-                
+
                 {canRetry ? (
                   <button onClick={handleRetry} className="bg-black border-2 border-yellow-500 text-yellow-500 py-4 hover:bg-yellow-500 hover:text-black text-[10px]">
                     DISTORÇÃO TEMPORAL: TENTAR NOVAMENTE (-{currentRetryCost} HP)
@@ -178,7 +178,7 @@ export function SinglePlayer() {
         <span>ESTÁGIO 0{stage}</span>
         <span>HP: <span className={campaign.hp <= 20 ? 'text-red-500 animate-pulse' : 'text-green-500'}>{campaign.hp}</span></span>
       </div>
-      <PongCanvas gameId={gameId} gameState={gameState} onMovePaddle={movePaddle} />
+      <PongCanvas gameId={gameId} gameState={gameState} onMovePaddle={movePaddle} stage={stage} />
       <button onClick={handleRetreat} className="mt-8 text-xs text-gray-600 hover:text-white uppercase border border-gray-800 px-4 py-2 hover:bg-gray-800 transition-colors">
         [ ABORTAR MISSÃO E ACEITAR DANO ]
       </button>
