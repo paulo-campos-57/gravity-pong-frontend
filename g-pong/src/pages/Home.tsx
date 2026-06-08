@@ -6,7 +6,6 @@ export function Home() {
   const navigate = useNavigate();
   const { campaign, isLoaded, updateProfile, resetCampaign, hardReset } = useCampaign();
   
-  // NOVO: Estado para controlar se a história está aberta ou fechada
   const [showLore, setShowLore] = useState(false);
 
   if (!isLoaded) return null;
@@ -23,7 +22,6 @@ export function Home() {
   return (
     <div className="min-h-screen bg-black text-green-500 font-arcade flex flex-col items-center p-8 crt relative overflow-hidden">
       
-      {/* ================= POPUP DE HISTÓRIA (STAR WARS) ================= */}
       {showLore && (
         <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4">
           <button 
@@ -76,7 +74,6 @@ export function Home() {
           </div>
         </div>
       )}
-      {/* =============================================================== */}
 
       <div className="text-center mb-6 mt-6 z-10">
         <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b from-purple-400 to-sky-600 drop-shadow-[0_0_15px_rgba(168,85,247,0.8)] mb-4">
@@ -84,7 +81,6 @@ export function Home() {
         </h1>
         <p className="text-white text-xs md:text-sm animate-pulse mb-6">INSERT COIN TO PROTECT YOUR PLANET</p>
         
-        {/* BOTÃO PARA ABRIR A LORE */}
         <button 
           onClick={() => setShowLore(true)}
           className="text-[10px] text-yellow-400 hover:text-white hover:underline transition-colors"
@@ -153,7 +149,6 @@ export function Home() {
         </div>
       ) : (
         <div className="grid md:grid-cols-2 gap-8 w-full max-w-4xl z-10">
-          {/* TORRE SINGLE PLAYER */}
           <div className="bg-gray-900 border-4 border-slate-700 p-6 flex flex-col gap-4">
             <h2 className="text-sm text-yellow-400 text-center mb-4">MÓDULO DE DEFESA</h2>
             
